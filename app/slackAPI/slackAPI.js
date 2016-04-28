@@ -5,10 +5,7 @@ using axios: https://github.com/mzabriskie/axios
 var axios = require('axios');
 
 //api url
-const SLACK_URL = 'https://slack.com/api/';
-
-
-
+const SLACK_URL = 'https://slack.com/api';
 
 var methods = {
 
@@ -16,15 +13,14 @@ var methods = {
     new Promise( (resolve, reject) => {
       axios.get(SLACK_URL +'/users.info', {
         params: {
-          token: "bob",
+          token: token,
           user: slack_id
         }
       })
       .then( res => {
-        console.log("returned from slack:", res.data);
-        res.data.ok ? resolve(res.data) : reject(res.data)
+        console.log("returned from slack:", res.data.user.name);
+        res.data.error ? reject(res.data) : resolve(res.data)
       });
-
     }),
 
   getTeamToken: (slack_id,cb) =>
@@ -35,7 +31,6 @@ var methods = {
         resolve(userInfo);
       })
     })
-
 
 }
 

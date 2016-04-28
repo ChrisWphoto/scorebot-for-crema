@@ -100,13 +100,13 @@ controller.hears('^stop','direct_message',function(bot,message) {
 controller.on('direct_message,mention,direct_mention',function(bot,message) {
     console.log('message from mention:', message);
     // console.log("this is bot obj", bot.config.bot);
-    ScoreKeeper.sendScores(message,bot);
-    bot.reply(message,'I am a marmota.');
+    ScoreKeeper.sendScores(bot,message);
+    bot.reply(message,'I am a marmota bot.');
 });
 
-controller.on('reaction_added',function(bot,message) {
+controller.on('reaction_added,reaction_removed',function(bot,message) {
     console.log('Reaction from slack:', message);
-    ScoreKeeper.analyze(message, bot);
+    ScoreKeeper.analyze(bot, message);
 });
 
 controller.storage.teams.all(function(err,teams) {

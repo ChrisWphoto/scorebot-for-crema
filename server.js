@@ -21,7 +21,7 @@ dotenv.load();
 app.use(express.static(__dirname + '/public'))
 
 //set and load mongoUri
-var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/botkit_express_demo';
+var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/botkit_scorebot';
 console.log('Connecting to Mongo:',mongoUri);
 mongoose.connect(mongoUri);
 
