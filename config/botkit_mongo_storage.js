@@ -1,4 +1,9 @@
-var db = require('monk');
+
+var mongoose       = require('mongoose');
+var Team           = require("../app/models/team");
+var User           = require("../app/models/user");
+
+
 /**
  * botkit-storage-mongo - MongoDB driver for Botkit
  *
@@ -9,10 +14,16 @@ module.exports = function(config) {
 
     if (!config || !config.mongoUri)
         throw new Error('Need to provide mongo address.');
-
-    var Teams = db(config.mongoUri).get('teams'),
-        Users = db(config.mongoUri).get('users'),
-        Channels = db(config.mongoUri).get('channels');
+        
+    mongoose.connect(config.mongoUri);
+    console.log('Connected to Mongo:', config.mongoUri);
+    
+    
+    //delete these when conversion to mongoose is compelete
+    // var Teams = db.get('teams'),
+    //     Users = db.get('users'),
+    //     Channels = db.get('channels');
+    
 
     var unwrapFromList = function(cb) {
         return function(err, data) {
@@ -24,35 +35,33 @@ module.exports = function(config) {
     var storage = {
         teams: {
             get: function(id, cb) {
-                Teams.findOne({id: id}, unwrapFromList(cb));
+                Team.findOne({id: id}, unwrapFromList(cb));
             },
             save: function(data, cb) {
-                Teams.findAndModify({
-                    id: data.id
-                }, data, {
+                let query = Team.where({ id: data.id });
+                Team.findOneAndUpdate(query, data, {
                     upsert: true,
                     new: true
                 }, cb);
             },
             all: function(cb) {
-                Teams.find({}, cb);
+                Team.find({}, cb);
             }
         },
         users: {
             get: function(id, cb) {
-                Users.findOne({id: id}, unwrapFromList(cb));
+                User.findOne({id: id}, unwrapFromList(cb));
             },
             save: function(data, cb) {
-                console.log('Storage.users: data', data);
-                Users.findAndModify({
-                    id: data.id
-                }, data, {
+              console.log('Storage.users: data', data);
+              let query = User.where({ id: data.id });
+                User.findOneAndUpdate(query, data, {
                     upsert: true,
                     new: true
                 }, cb);
             },
             all: function(cb) {
-                Users.find({}, cb);
+                User.find({}, cb);
             }
         },
         channels: {

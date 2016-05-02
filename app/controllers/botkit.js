@@ -8,6 +8,7 @@ var Slacklete     = require('../models/slacklete');
 var Medal         = require('../models/medal');
 var ScoreKeeper   = require('./scoreKeeper');
 
+
 if (!process.env.SLACK_ID || !process.env.SLACK_SECRET || !process.env.PORT) {
   console.log('Error: Specify SLACK_ID SLACK_SECRET and PORT in environment');
   process.exit(1);
