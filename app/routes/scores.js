@@ -11,6 +11,16 @@ router.get('/', function(req, res, next) {
   })
 });
 
+/* GET users listing. */
+router.post('/', function(req, res, next) {
+  Slacklete.find({}).then(function(slackletes) {
+    res.status(200).send(slackletes);
+  }, function (err) {
+    res.status(500).send({error: err})
+  })
+});
+
+
 router.get('/:id', function(req, res, next) {
   Slacklete.findOne({slack_id: req.params.id}).then(function(slacklete) {
     if (slacklete) {
