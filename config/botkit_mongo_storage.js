@@ -1,3 +1,4 @@
+"use strict";
 
 var mongoose       = require('mongoose');
 var Team           = require("../app/models/team");
