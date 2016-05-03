@@ -19,11 +19,6 @@ module.exports = function(config) {
     console.log('Connected to Mongo:', config.mongoUri);
     
     
-    //delete these when conversion to mongoose is compelete
-    // var Teams = db.get('teams'),
-    //     Users = db.get('users'),
-    //     Channels = db.get('channels');
-    
 
     var unwrapFromList = function(cb) {
         return function(err, data) {
@@ -32,6 +27,9 @@ module.exports = function(config) {
         };
     };
 
+    //
+    var channels;
+    
     var storage = {
         teams: {
             get: function(id, cb) {
@@ -64,6 +62,8 @@ module.exports = function(config) {
                 User.find({}, cb);
             }
         },
+        // Channels is not currently be used
+        // if needed this should be ported over to mongoose from monk
         channels: {
             get: function(id, cb) {
                 Channels.findOne({id: id}, unwrapFromList(cb));
