@@ -2,6 +2,9 @@
   "name": "botkit-scorebot",
   "version": "0.1.0",
   "description": "Scorebot within an Express app, using Mongodb database",
+  "engines": {
+    "node": "6.0.0"
+  },
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -22,7 +25,6 @@
     "express": "^4.13.4",
     "mongodb": "^2.1.6",
     "mongoose": "~4.1.9",
-    "monk": "^1.0.1",
     "request": "^2.69.0"
   }
 }
