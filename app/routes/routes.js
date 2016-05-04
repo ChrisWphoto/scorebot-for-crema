@@ -104,6 +104,7 @@ module.exports = function(app) {
   var saveUser = function(auth, identity){
     // what scopes did we get approved for?
     var scopes = auth.scope.split(/\,/);
+    console.log("Auth we returned", auth);
 
     slack.controller.storage.users.get(identity.user_id, function(err, user) {
       isnew = false;
