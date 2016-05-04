@@ -115,6 +115,14 @@ controller.on('reaction_added,reaction_removed',function(bot,message) {
     ScoreKeeper.analyze(bot, message);
 });
 
+
+controller.on('slash_command',function(bot,message) {
+  console.log('slash command msg', message);
+  bot.replyPublic(message,'<@' + message.user + '> is cool!');
+  bot.replyPrivate(message,'*nudge nudge wink wink*');
+
+});
+
 controller.storage.teams.all(function(err,teams) {
   console.log("============Registered Teams============");
   console.log(teams)
