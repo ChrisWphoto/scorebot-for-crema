@@ -15,11 +15,13 @@ if (!process.env.SLACK_ID || !process.env.SLACK_SECRET || !process.env.PORT) {
 }
 
 var controller = Botkit.slackbot({
-  storage: botkit_mongo_storage
+  storage: botkit_mongo_storage,
+  debug: 2
 }).configureSlackApp({
     clientId: process.env.SLACK_ID,
     clientSecret: process.env.SLACK_SECRET,
-    scopes: ['commands'],
+    redirectUri: 'https://mr-scorebot.herokuapp.com',
+    scopes: ['commands','incoming-webhook','team:read','users:read','channels:read','im:read','im:write','groups:read','emoji:read','chat:write:bot'],
   });
 
 
