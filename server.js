@@ -6,7 +6,7 @@ var http           = require('http').Server(app);
 var dotenv         = require('dotenv');
 
 // Routes ===========================================
-var scores   = require('./app/routes/scores');
+var slash   = require('./app/routes/slashCommands');
 
 
 // configuration ===========================================
@@ -24,8 +24,8 @@ app.use(express.static(__dirname + '/public'))
 // console.log('Connecting to Mongo:',mongoUri);
 // mongoose.connect(mongoUri);
 
-//link up route
-app.use('/scores', scores);
+//link up route for responding to slash commands
+app.use('/slash', slash);
 
 //parsing
 app.use(bodyParser.json()); // for parsing application/json

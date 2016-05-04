@@ -2,7 +2,7 @@
 
 var Medal         = require('../models/medal');
 var Slacklete     = require('../models/slacklete');
-var SlackAPI      = require('../slackAPI/slackAPI');
+var SlackAPI      = require('../utils/slackAPI');
 var Controller    = require('./botkit');
 
 //Helper Functions for analyze method --->
