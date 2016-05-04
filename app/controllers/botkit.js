@@ -16,7 +16,12 @@ if (!process.env.SLACK_ID || !process.env.SLACK_SECRET || !process.env.PORT) {
 
 var controller = Botkit.slackbot({
   storage: botkit_mongo_storage
-})
+}).configureSlackApp({
+    clientId: process.env.SLACK_ID,
+    clientSecret: process.env.SLACK_SECRET,
+    scopes: ['commands'],
+  });
+
 
 exports.controller = controller
 
