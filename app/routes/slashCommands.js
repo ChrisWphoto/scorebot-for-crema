@@ -1,3 +1,4 @@
+"use strict";
 var express    = require('express');
 var router     = express.Router();
 var Slacklete  = require('../models/slacklete');
@@ -39,9 +40,18 @@ router.post('/', function(req, res, next) {
       });
     case "announce":
       // Have Scorebot post in the channel (public to channel)
-      return Scoreboard.getAllScoresText().then(function(text) {
-        channel.send("Here are the latest scores:\n" + text);
-        res.status(200).send();
+      return Scoreboard.getAllScoresText().then(function(scores) {
+        //compose score res object
+        let allScoresRes =  {
+          "response_type": "in_channel",
+          "text": "The Current ScoreBoard!",
+          "attachments": [
+            {
+                "text": scores
+            }
+          ]
+        };
+        res.status(200).send(allScoresRes);
       }, function(text) {
         res.status(400).send(text);
       });
@@ -57,15 +67,7 @@ router.post('/', function(req, res, next) {
       return Scoreboard.getAllScoresText().then(function(text) {
         console.log("res from getallscores\n", res);
         console.log("res.body from getallscores \n", res.body);
-        var x = {
-    "response_type": "in_channel",
-    "text": "It's 80 degrees right now.",
-    "attachments": [
-        {
-            "text":"Partly cloudy today and tomorrow"
-        }
-    ]
-};
+     
         res.status(200).send(x);
         // res.status(200).send("Here are the latest scores:\n" + text);
       }, function(text) {
