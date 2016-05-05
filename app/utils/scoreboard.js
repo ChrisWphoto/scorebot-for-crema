@@ -28,7 +28,7 @@ module.exports = {
     }, function(err) {
       deferred.reject(err);
     });
-    return deferred.promise;
+    return deferred.promise;  
   },
   getMyScore: function(user) {
     var deferred = Q.defer();

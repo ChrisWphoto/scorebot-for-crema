@@ -55,6 +55,8 @@ router.post('/', function(req, res, next) {
     default:
       // Return scores in response for slackbot to report (private)
       return Scoreboard.getAllScoresText().then(function(text) {
+        console.log("res from getallscores\n", res);
+        console.log("res.body from getallscores \n", res.body);
         res.status(200).send("Here are the latest scores:\n" + text);
       }, function(text) {
         res.status(400).send(text);
