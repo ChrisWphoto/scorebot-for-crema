@@ -7,7 +7,8 @@ var Officiator = require('../utils/officiator');
 
 /* GET users listing. */
 router.post('/', function(req, res, next) {
-  console.log("req.body from slash route / \n", req.body);
+  console.log("req from slash route / \n", req);
+  console.log("res from slash route / \n", res);
   if (req.body.token != process.env['SLACK_SLASH_TOKEN']) {
     return res.process(401).send({erro: "Slash command token doesn't match"});
   }
