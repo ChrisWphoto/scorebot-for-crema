@@ -24,12 +24,14 @@ app.use(express.static(__dirname + '/public'))
 // console.log('Connecting to Mongo:',mongoUri);
 // mongoose.connect(mongoUri);
 
-//link up route for responding to slash commands
-app.use('/slash', slash);
 
 //parsing
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); //for parsing url encoded
+
+//link up route for responding to slash commands
+app.use('/slash', slash);
+
 
 // view engine ejs
 app.set('view engine', 'ejs');
