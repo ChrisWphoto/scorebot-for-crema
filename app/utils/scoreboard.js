@@ -3,10 +3,10 @@ var Q = require('q');
 
 // Collects and displays scores
 module.exports = {
-  getAllScoresText: function() {
+  getAllScoresText: function(teamID) {
     var deferred = Q.defer();
 
-    this.getAllScores().then(function(slackletes) {
+    this.getAllScores(teamID).then(function(slackletes) {
       var text = slackletes.map(function(slacklete) {
           return "*" + slacklete.name + "*: " + slacklete.score;
         }).join("\n");
@@ -16,10 +16,10 @@ module.exports = {
     })
     return deferred.promise;
   },
-  getAllScores: function() {
+  getAllScores: function(teamID) {
     var scoreboard = this;
     var deferred = Q.defer();
-    Slacklete.find({}).then(function(slackletes) {
+    Slacklete.find({team_id: teamID}).then(function(slackletes) {
       if (slackletes.length) {
         deferred.resolve(slackletes.sort(scoreboard.sortByScore));
       } else {

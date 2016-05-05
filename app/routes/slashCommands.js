@@ -16,6 +16,7 @@ router.post('/', function(req, res, next) {
   var user = req.body.user_id;
   var user_name = req.body.user_name;
   var channel = "";
+  var team_id = req.body.team_id;
 
   // // `:reaction: = 100` - set score of medal
   // if (text.split("=").length > 1 && text.indexOf(":") > -1) {
@@ -40,16 +41,11 @@ router.post('/', function(req, res, next) {
       });
     case "announce":
       // Have Scorebot post in the channel (public to channel)
-      return Scoreboard.getAllScoresText().then(function(scores) {
+      return Scoreboard.getAllScoresText(team_id).then(function(scores) {
         //compose score res object
         let allScoresRes =  {
           "response_type": "in_channel",
-          "text": "The Current ScoreBoard!",
-          "attachments": [
-            {
-                "text": scores
-            }
-          ]
+          "text": "The Current ScoreBoard!\n" + scores
         };
         res.status(200).send(allScoresRes);
       }, function(text) {
@@ -64,12 +60,9 @@ router.post('/', function(req, res, next) {
       })
     default:
       // Return scores in response for slackbot to report (private)
-      return Scoreboard.getAllScoresText().then(function(text) {
-        console.log("res from getallscores\n", res);
+      return Scoreboard.getAllScoresText(team_id).then(function(text) {
         console.log("res.body from getallscores \n", res.body);
-     
-        res.status(200).send(x);
-        // res.status(200).send("Here are the latest scores:\n" + text);
+        res.status(200).send("Here are the latest scores:\n" + text);
       }, function(text) {
         res.status(400).send(text);
       });
