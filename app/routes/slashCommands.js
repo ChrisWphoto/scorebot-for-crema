@@ -57,7 +57,17 @@ router.post('/', function(req, res, next) {
       return Scoreboard.getAllScoresText().then(function(text) {
         console.log("res from getallscores\n", res);
         console.log("res.body from getallscores \n", res.body);
-        res.status(200).send("Here are the latest scores:\n" + text);
+        var x = {
+    "response_type": "in_channel",
+    "text": "It's 80 degrees right now.",
+    "attachments": [
+        {
+            "text":"Partly cloudy today and tomorrow"
+        }
+    ]
+};
+        res.status(200).send(x);
+        // res.status(200).send("Here are the latest scores:\n" + text);
       }, function(text) {
         res.status(400).send(text);
       });
