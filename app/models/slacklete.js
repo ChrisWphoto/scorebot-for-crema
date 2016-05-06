@@ -4,7 +4,9 @@ var Schema       = mongoose.Schema;
 var schema = new Schema({
   name: String,
   slack_id: String,
-  score: Number
+  score: Number,
+  team_id: String,
+  team_name: String
 });
 
 schema.methods.award = function(points) {

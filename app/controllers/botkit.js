@@ -7,6 +7,7 @@ var botkit_mongo_storage = require('../../config/botkit_mongo_storage')({mongoUr
 var Slacklete     = require('../models/slacklete');
 var Medal         = require('../models/medal');
 var ScoreKeeper   = require('./scoreKeeper');
+var scoreboard    = require('../utils/scoreboard');
 
 
 if (!process.env.SLACK_ID || !process.env.SLACK_SECRET || !process.env.PORT) {
@@ -17,12 +18,6 @@ if (!process.env.SLACK_ID || !process.env.SLACK_SECRET || !process.env.PORT) {
 var controller = Botkit.slackbot({
   storage: botkit_mongo_storage
 })
-// .configureSlackApp({
-//     clientId: process.env.SLACK_ID,
-//     clientSecret: process.env.SLACK_SECRET,
-//     redirectUri: 'https://mr-scorebot.herokuapp.com',
-//     scopes: ['commands','incoming-webhook','team:read','users:read','channels:read','im:read','im:write','groups:read','emoji:read','chat:write:bot'],
-//   });
 
 
 exports.controller = controller
@@ -73,8 +68,8 @@ controller.on('create_bot',function(bot,team) {
         if (err) {
           console.log(err);
         } else {
-          convo.say('I am a bot that has just joined your team');
-          convo.say('You must now /invite me to a channel so that I can be of use!');
+          convo.say('I am Mr. Scorebot');
+          convo.say('/invite me to a channel and I will award points to the coolest people in the office');
         }
       });
 
@@ -107,9 +102,7 @@ controller.hears('^stop','direct_message',function(bot,message) {
 
 controller.on('direct_message,mention,direct_mention',function(bot,message) {
     console.log('message from mention:', message);
-    // console.log("this is bot obj", bot.config.bot);
-    ScoreKeeper.sendScores(bot,message);
-    bot.reply(message,'I am a marmota bot.');
+    bot.reply(message,'I am a Mr. Scorebot.');
 });
 
 controller.on('reaction_added,reaction_removed',function(bot,message) {
@@ -118,13 +111,50 @@ controller.on('reaction_added,reaction_removed',function(bot,message) {
 });
 
 
-controller.on('slash_command',function(bot,message) {
-  console.log('slash command msg', message);
-  bot.replyPublic(message,'<@' + message.user + '> is cool!');
-  bot.replyPrivate(message,'*nudge nudge wink wink*');
+var AllScoresText;
 
+controller.hears(['my score', 'who is winning'],['ambient'],function(bot,message) {
+  scoreboard.getAllScoresText(bot.team_info.id).then((text) => {
+      console.log(text, "text stuff");
+      AllScoresText = text;
+      bot.startConversation(message, askToSeeScores);
+  });
+  
 });
 
+askToSeeScores = function(response, convo) {
+  convo.ask("I am the keeper of the scores! \nDo you want to see everyone's score or just yours?", function(res, convo) {
+    console.log("response", res);
+    if(res.text.indexOf("everyone") > -1){
+      convo.say("All I do is WIN WIN WIN :slack: :tada: :boom:");
+      convo.say(AllScoresText);  
+      console.log("getting all scores");
+      convo.next();
+    }
+    else if(res.text.indexOf("me") > -1 || res.text.indexOf("my") > -1){
+      scoreboard.getMyScore(res.user).then( (text) => {
+        convo.say(text);
+        console.log("the text", text);
+        convo.next();
+      });
+    }
+    else {
+      convo.say("Alrighty! Goodbye");
+      convo.next();
+    }
+    
+    
+    
+  });
+}
+
+
+
+
+
+
+
+//setup each registered team
 controller.storage.teams.all(function(err,teams) {
   console.log("============Registered Teams============");
   console.log(teams)
