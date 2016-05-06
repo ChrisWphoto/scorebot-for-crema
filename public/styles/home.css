@@ -1,0 +1,21 @@
+body {
+  background-color: #3D434C;
+  
+}
+.wrapper {
+  width: 100vw;
+  height: 100vh;
+  text-align: center;
+  background-image: url("/images/scores.png");
+  background-size: cover;
+}
+
+.wrapper img {
+  padding-top: 35px;
+}
+
+.wrapper h2 {
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  
+}

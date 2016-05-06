@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="en-US">
+<head>
+  <link rel="stylesheet" type="text/css" href="/styles/home.css">
+</head>
   <body>
-    <h1>Welcome</h1>
-    <center>
-        <a href='https://slack.com/oauth/authorize?client_id=<%= process.env.SLACK_ID %>&redirect_uri=<%= process.env.SLACK_REDIRECT %>new&scope=bot,commands'><img alt="Add to Slack" height="40" width="139" src="/images/add_to_slack.png"></a>
-    </center>
+    <div class="wrapper">    
+      <img src="/images/scorebot-logo.png"/>
+      <br/>
+      <h2> Rule the office</h2>
+      <a href='https://slack.com/oauth/authorize?client_id=<%= process.env.SLACK_ID %>&redirect_uri=<%= process.env.SLACK_REDIRECT %>new&scope=bot,commands'><img alt="Add to Slack" height="40" width="139" src="/images/add_to_slack.png"></a>
+    </div>
   </body>
 </html>
 
