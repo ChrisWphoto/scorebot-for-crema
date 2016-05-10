@@ -2,13 +2,14 @@
 
 /* Uses the slack button feature to offer a real time bot to multiple teams */
 var Botkit = require('botkit');
-var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/botkit_scorebot'
-var botkit_mongo_storage = require('../../config/botkit_mongo_storage')({mongoUri: mongoUri})
 var Slacklete     = require('../models/slacklete');
 var Medal         = require('../models/medal');
 var ScoreKeeper   = require('./scoreKeeper');
 var scoreboard    = require('../utils/scoreboard');
+var Converse      = require('./converse');
 
+var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/botkit_scorebot'
+var botkit_mongo_storage = require('../../config/botkit_mongo_storage')({mongoUri: mongoUri})
 
 if (!process.env.SLACK_ID || !process.env.SLACK_SECRET || !process.env.PORT) {
   console.log('Error: Specify SLACK_ID SLACK_SECRET and PORT in environment');
@@ -44,12 +45,9 @@ controller.on('create_bot',function(bot,team) {
   }
   else {
     bot.startRTM(function(err) {
-
       if (!err) {
         trackBot(bot);
-
         console.log("RTM ok")
-
         controller.saveTeam(team, function(err, id) {
           if (err) {
             console.log("Error saving team")
@@ -59,11 +57,10 @@ controller.on('create_bot',function(bot,team) {
           }
         })
       }
-
       else{
         console.log("RTM failed")
       }
-
+      //Introduce Scorebot to the user who added the bot
       bot.startPrivateConversation({user: team.createdBy},function(err,convo) {
         if (err) {
           console.log(err);
@@ -72,7 +69,6 @@ controller.on('create_bot',function(bot,team) {
           convo.say('/invite me to a channel and I will award points to the coolest people in the office');
         }
       });
-
     });
   }
 });
@@ -83,7 +79,6 @@ controller.on('create_bot',function(bot,team) {
 controller.on('rtm_open',function(bot) {
   console.log('** The RTM api just connected!');
 });
-
 controller.on('rtm_close',function(bot) {
   console.log('** The RTM api just closed');
   // you may want to attempt to re-open
@@ -91,18 +86,15 @@ controller.on('rtm_close',function(bot) {
 
 //DIALOG ======================================================================
 
-controller.hears('hello','direct_message',function(bot,message) {
-  bot.reply(message,'Hello!');
-});
 
 controller.hears('^stop','direct_message',function(bot,message) {
   bot.reply(message,'Goodbye');
   bot.rtm.close();
 });
 
-controller.on('direct_message,mention,direct_mention',function(bot,message) {
-    console.log('message from mention:', message);
-    bot.reply(message,'I am a Mr. Scorebot.');
+controller.hears(['set', '=', 'make (.*) equal', 'make (.*) worth'],'direct_message,direct_mention',function(bot,message) {
+    console.log('Direct Mention:"set", sending to Converse.updateMedal:\n', message);
+    Converse.updateMedal(bot, message);
 });
 
 controller.on('reaction_added,reaction_removed',function(bot,message) {
@@ -119,7 +111,6 @@ controller.hears(['my score', 'who is winning'],['ambient'],function(bot,message
       AllScoresText = text;
       bot.startConversation(message, askToSeeScores);
   });
-  
 });
 
 askToSeeScores = function(response, convo) {
