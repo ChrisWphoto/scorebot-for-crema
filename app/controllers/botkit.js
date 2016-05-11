@@ -7,6 +7,7 @@ var Medal         = require('../models/medal');
 var ScoreKeeper   = require('./scoreKeeper');
 var scoreboard    = require('../utils/scoreboard');
 var Converse      = require('./converse');
+var Officiator    = require('../utils/officiator')
 
 var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/botkit_scorebot'
 var botkit_mongo_storage = require('../../config/botkit_mongo_storage')({mongoUri: mongoUri})
@@ -92,19 +93,52 @@ controller.hears('^stop','direct_message',function(bot,message) {
   bot.rtm.close();
 });
 
+//set value of medal
 controller.hears(['set', '=', 'make (.*) equal', 'make (.*) worth'],'direct_message,direct_mention',function(bot,message) {
     console.log('Direct Mention:"set", sending to Converse.updateMedal:\n', message);
     Converse.updateMedal(bot, message);
 });
 
+//show medals for this team
+controller.hears(['show (.*) medals', 'show medals', 'show (.*) reactions', 'show (.*) emoji'],'direct_message,direct_mention',function(bot,message) {
+    console.log('Direct Mention:"show medals\n', message);
+    Officiator.getMedalValuesText(bot.team_info.id).then(function(text) {
+        bot.reply(message, "\n" + text);
+      });
+});
+
+//deal with reactions being added and removed
 controller.on('reaction_added,reaction_removed',function(bot,message) {
     console.log('Reaction from slack:', message);
     ScoreKeeper.analyze(bot, message);
 });
 
+//introduce scorebot to the masses
+controller.on('channel_joined',function(bot,message) {
+    console.log('Channel Joined:', message);
+    let introText = "Hey Thanks for the invite :smile:! I'm Mr. Scorebot I am now resident quantifier-of-social-status for your team."
+    let helpText = "\nIf you wanna know what I do all day, ask me! `@Scorebot What do you do?` or maybe `@Scorebot HELP!?`"
+    bot.say({
+        text: introText + helpText,
+        channel: message.channel.id //'C0H338YH4' // a valid slack channel, group, mpim, or im ID
+      }
+    );
+});
 
+//respond to cries for help
+controller.hears(['what do you do', 'help', 'commands', 'features'],'direct_message,direct_mention',function(bot,message) {
+    console.log('Direct Mention:"show medals\n', message);
+    Converse.help(bot,message);
+    
+});
+
+
+//declar var for storing pre-emptive call to db for teams scores
+//sometimes async calls can cause the conversation to create a race condition. 
+//Read more here about the issue https://github.com/howdyai/botkit/issues/20
 var AllScoresText;
 
+//Post the scoreboard to the channel 
 controller.hears(['my score', 'who is winning'],['ambient'],function(bot,message) {
   scoreboard.getAllScoresText(bot.team_info.id).then((text) => {
       console.log(text, "text stuff");
@@ -114,7 +148,7 @@ controller.hears(['my score', 'who is winning'],['ambient'],function(bot,message
 });
 
 askToSeeScores = function(response, convo) {
-  convo.ask("I am the keeper of the scores! \nDo you want to see everyone's score or just yours?", function(res, convo) {
+  convo.ask("Do you want to see everyone's score or just yours?", function(res, convo) {
     console.log("response", res);
     if(res.text.indexOf("everyone") > -1){
       convo.say("All I do is WIN WIN WIN :slack: :tada: :boom:");

@@ -6,6 +6,8 @@
 
 var Medal         = require('../models/medal');
 
+
+
 function getReactions(msg) {
   return msg.text.match(/:\w+:/g); //e.g. [':simple_smile:']
 };
@@ -18,6 +20,15 @@ function getReactionValues(msg) {
 function stripColons(array){
   return array.map( react => react.substring(1, react.length -1) );
 };
+
+
+/*
+Each team can have it's own set of medals.
+There is a default value for each medal.
+step 1: verfiy reaction is legit slack reaction (implement later) 
+step 2: If exist for that team return/update that medal
+step 2a: if NOT exist for team use default. 
+ */ 
 
 function saveMedalValue(medalArray, medalValArray, bot, msg){
   console.log(medalValArray);
@@ -72,15 +83,71 @@ var Converse = {
           });
         }); 
       }
+
       //we are missing both reaction and value
       else {
         bot.reply(msg,"I think you're trying to set the value of a reaction. Try sending this: :smirk: = 5");
-      }
-      
-      
+      }      
     } 
-  }
+  },
   
+  help: function(bot, msg) {
+    let aboutMeText = "I am Mr. Scorebot and I award points of awesomeness to people who get reactions on their messages.";
+    let scorebotCommandsText = "You can ask me things like ```@scorebot show me all the medals``` or ```@scorebot make :tada: = 40pts``` or ```@scorebot who's winning?```";
+    //prepare and object that can be passed to YesSeeMeInAction via bind
+    this.helpObj = {botFromHelp:bot, commandsFromHelp: scorebotCommandsText};
+    bot.startConversation(msg, ( res, convo ) => {
+      convo.say(aboutMeText);
+      convo.ask('Do you wanna see me in action?',[
+        {
+          pattern: bot.utterances.yes,
+          callback: YesSeeMeInAction.bind(this) //this function has access to the "bot" & "scorebotCommandsText" becase of bind helpObj
+        },
+        {
+          pattern: bot.utterances.no,
+          callback: function(response,convo) {
+            convo.say("No problem!\n" + scorebotCommandsText);
+            convo.next();
+          }
+      }
+      ]);
+    });
+  }
+    
 }
 
+function YesSeeMeInAction(res,convo){
+  //grab values from help function above
+  let bot = this.helpObj.botFromHelp;
+  let scorebotCommandsText = this.helpObj.commandsFromHelp;
+  console.log('yes bot res\n', this.myObj);
+  console.log('this.bot',this.help);
+            //add robot_face to last message from user
+            bot.api.reactions.add({
+            timestamp: res.ts,
+            channel: res.channel,
+            name: 'robot_face',
+          },function(err) {
+            if (err) { console.log(err) }
+            convo.say('Did you catch it? I just put a :robot_face: on your last message, which means you get points! :tada:');
+            convo.ask("Do you wanna see things you can ask me?.", [
+              {
+                pattern: bot.utterances.yes,
+                callback: function(res,convo) {
+                  console.log('yes see what I do', res);            
+                  convo.say(scorebotCommandsText);
+                  convo.next();
+                }
+              },
+              {
+                pattern: bot.utterances.no,
+                callback: function(response,convo) {
+                  convo.say("No problem!\n you can type: '@scorebot commands' in any channel I am invited to.");
+                  convo.next();
+                }
+              }
+            ]);
+            convo.next();
+          });
+};
 module.exports = Converse;

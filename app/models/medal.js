@@ -3,7 +3,8 @@ var Schema = mongoose.Schema;
 
 var schema = new Schema({
   reaction: String,
-  value: Number
+  value: Number,
+  team_id: String
 });
 
 var Medal = mongoose.model('Medal', schema);

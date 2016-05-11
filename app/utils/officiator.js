@@ -47,11 +47,11 @@ module.exports = {
 
     return deferred.promise;
   },
-  getMedalValuesText: function() {
+  getMedalValuesText: function(teamID) {
     var deferred = Q.defer();
     var officiator = this;
 
-    Medal.find({}).then(function(medals) {
+    Medal.find({team_id: teamID}).then(function(medals) {
       var text = medals.sort(officiator.sortByValue).map(function(medal) {
         return ":" + medal.reaction + ": - `:" + medal.reaction + ":` *" +
           String(medal.value) + " points*";

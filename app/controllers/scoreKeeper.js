@@ -48,9 +48,13 @@ function addNewUser( msg, bot, medal ){
            reject => console.log('Error saving new slacklete:', reject) );
 };
 
-function saveMedalToDb( {reaction} ) {
+function saveMedalToDb( {reaction}, bot  ) {
   return new Promise( (resolve, reject) => {
-    let newMedal = new Medal({reaction: reaction, value: 10});
+    let newMedal = new Medal({
+      reaction: reaction, 
+      value: Math.ceil(25 * Math.random()), //rand val between 1 & 25
+      team_id: bot.team_info.id
+    });
     newMedal.save(err => {
       if (err) reject(err);
       else {
@@ -70,40 +74,41 @@ function logErr(msg, err) {console.log(msg,err)}
 var ScoreKeeper = {
   
   analyze: function( bot, msg ) {
-    
     //get author of original post
     let author = msg.item_user;
     let query = Slacklete.where({ slack_id: author });
     
     //find the medal for given reaction
-    Medal.findOne( {reaction: msg.reaction} ).then( medal => {
-    if (medal) {
-      query.findOne({slack_id: author}).then(function(slacklete) {
-        //check if slacklete exists
-        if (slacklete) {
-          console.log('slacklete ' + slacklete.slack_id + ' found');
-          updateScore(slacklete, msg, medal);
-        } else {
-            console.log('New Slacklete Found Saving...');
-            //Save user and update their score
-            addNewUser(msg, bot, medal);
-          }
-      });
-      } else {
-        saveMedalToDb(msg).then( newMedal => {
-          console.log("newMedal found:", newMedal.reaction);
-          query.findOne({slack_id: author}).then( slacklete => {
+    let medalData = {reaction: msg.reaction, team_id: bot.team_info.id};
+    Medal.findOne( medalData ).then( medal => {
+      if (medal) { //we have found a medal!
+        query.findOne({slack_id: author}).then(function(slacklete) {
           //check if slacklete exists
           if (slacklete) {
             console.log('slacklete ' + slacklete.slack_id + ' found');
-            updateScore(slacklete, msg, newMedal);
-          } else {
+            updateScore(slacklete, msg, medal);
+          } else { //user not found, creating user...
               console.log('New Slacklete Found Saving...');
               //Save user and update their score
-              console.log("\n\nbot config: ", bot.config.bot, "\n\n");
-              addNewUser(msg, bot, newMedal);
+              addNewUser(msg, bot, medal);
             }
-          });  
+        });
+      } else { //We did not find a existing medal for that team :(
+        saveMedalToDb(msg, bot).then( newMedal => {
+          console.log("newMedal found:", newMedal.reaction);
+          //See if the person who received medal exists in db
+          query.findOne({slack_id: author}).then( slacklete => {
+            //check if slacklete exists
+            if (slacklete) {
+              console.log('slacklete ' + slacklete.slack_id + ' found');
+              updateScore(slacklete, msg, newMedal);
+            } else { //user not found, creating user...
+                console.log('New Slacklete Found Saving...');
+                //Save user and update their score
+                console.log("\n\nbot config: ", bot.config.bot, "\n\n");
+                addNewUser(msg, bot, newMedal);
+              }
+            });  
         });
       }
     });
