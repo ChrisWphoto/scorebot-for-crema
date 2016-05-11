@@ -68,6 +68,7 @@ controller.on('create_bot',function(bot,team) {
         } else {
           convo.say('I am Mr. Scorebot');
           convo.say('/invite me to a channel and I will award points to the coolest people in the office');
+          convo.say("you can also type `@mrscorebot help!`");
         }
       });
     });
