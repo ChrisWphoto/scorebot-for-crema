@@ -88,6 +88,18 @@ controller.on('rtm_close',function(bot) {
 
 //DIALOG ======================================================================
 
+/*
+award points to user mentioned + reactions
+e.g. @Jane :tada:  or :+1: @Bob
+(example msg form slack) text: 'asdasda <@U0KDPC4H2> :smile:',
+*/
+//'@\w+(.*):(.*):|:(.*):(.*)@\w+'
+controller.hears('<@(.*):(.*):|:(.*):(.*)<@(.*)','ambient',function(bot,message) {
+  console.log('Ambient:\n', message, "\n");
+  ScoreKeeper.awardPtsOnMention(bot,message);
+});
+
+
 
 controller.hears('^stop','direct_message',function(bot,message) {
   bot.reply(message,'Goodbye');
@@ -114,6 +126,20 @@ controller.on('reaction_added,reaction_removed',function(bot,message) {
     ScoreKeeper.analyze(bot, message);
 });
 
+//respond to cries for help
+controller.hears(['what do you do', 'help', 'features'],'direct_message,direct_mention',function(bot,message) {
+    console.log('Direct Mention:"show medals\n', message);
+    Converse.help(bot,message);    
+});
+
+//Send scorebot commands
+controller.hears(['commands', 'command', 'comand', 'comands', 'orders','instructions'],'direct_message,direct_mention',function(bot,message) {
+    console.log('Direct Mention:"commands\n', message);
+    Converse.commands(bot,message);    
+});
+
+
+
 //introduce scorebot to the masses
 controller.on('channel_joined',function(bot,message) {
     console.log('Channel Joined:', message);
@@ -126,12 +152,6 @@ controller.on('channel_joined',function(bot,message) {
     );
 });
 
-//respond to cries for help
-controller.hears(['what do you do', 'help', 'commands', 'features'],'direct_message,direct_mention',function(bot,message) {
-    console.log('Direct Mention:"show medals\n', message);
-    Converse.help(bot,message);
-    
-});
 
 
 //declar var for storing pre-emptive call to db for teams scores
@@ -140,7 +160,7 @@ controller.hears(['what do you do', 'help', 'commands', 'features'],'direct_mess
 var AllScoresText;
 
 //Post the scoreboard to the channel 
-controller.hears(['my score', 'who is winning'],['ambient'],function(bot,message) {
+controller.hears(['my score','winning'],['direct_mention, direct_message'],function(bot,message) {
   scoreboard.getAllScoresText(bot.team_info.id).then((text) => {
       console.log(text, "text stuff");
       AllScoresText = text;
@@ -168,11 +188,18 @@ askToSeeScores = function(response, convo) {
       convo.say("Alrighty! Goodbye");
       convo.next();
     }
-    
-    
-    
   });
 }
+
+
+
+
+/* This should be last! */
+//Default reply for scorebot - No thing above matched 
+controller.on('direct_mention,direct_message',function(bot,message) {
+    console.log('Default Reply by scorebot:\n', message);
+    bot.reply(message, "Sorry! I can be dumb sometimes :frowning: `@scorebot commands` shows what I can do" );
+});
 
 
 

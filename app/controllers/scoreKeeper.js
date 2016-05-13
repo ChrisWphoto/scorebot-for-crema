@@ -64,11 +64,29 @@ function saveMedalToDb( {reaction}, bot  ) {
     });  
   });
 };
+
+function logErr(msg, err) {
+  console.log(msg,err)
+};
+
+//get 1 or more users and strip off special characters
+//(example msg) 'asdasda <@U0KDPC4H2> :smile:'
+function getUserIdArray(msg){
+  return msg.text.match(/<@(.*)>/g)
+    .map( userId => userId.substring(2, userId.length-1) );
+};
+
+//get 1 or more reactions and strip off special characters
+function getReactionArray(msg){
+  return msg.text.match(/:\w+:/g)
+    .map( reaction => reaction.substring(1, reaction.length -1) );
+};
+
+
 /*
 Note: Slack API Token is at bot.config.bot.token
       Team Name is at bot.team_info.id
 */
-function logErr(msg, err) {console.log(msg,err)}
 
 // Calculates and delegates scores
 var ScoreKeeper = {
@@ -114,14 +132,47 @@ var ScoreKeeper = {
     });
   },
 
-  //For testing, send all slackletes on direct mention of bot
-  sendScores: function(bot, msg) {
-    Slacklete.find({}).then(function(slackletes) {
-      bot.reply(msg, "Hey What's up?" );
-    });
+  /*
+  Award points when user is mentioned in same sentence as reaction
+  e.g. @Jane :tada:  or :+1: @Bob
+  (example msg form slack) text: 'asdasda <@U0KDPC4H2> :smile:',
+  */
+  // TODO / NOTE: this function does not create new medals or users it only operates on existing ones. 
+  awardPtsOnMention: function(bot,msg){
+    let reactionsArray = getReactionArray(msg);
+    let userIdArray = getUserIdArray(msg);
+    
+    let findTheseReactions = [];
+    reactionsArray.forEach( reactName => findTheseReactions.push({reaction: reactName }) );
+    //find all the medals used in msg
+    Medal.find()
+      .and([
+          { team_id: msg.team },
+          { $or: findTheseReactions }  
+      ])
+      .exec( (err, results) => {
+          if (err) { console.log(err); return;}
+          console.log("awardPtsOnMention reactions in db: \n", results, "\n");
+          //sum up all the points we got back
+          let totalPts = results.map(obj => obj.value)
+            .reduce( (prev,curr) => prev + curr, 0 );
+          console.log(totalPts);
+          //go find the slackletes who were mentioned
+          Slacklete.find()
+            .or( {slack_id: {"$in":userIdArray} })
+            .exec( (err, slackletes) => {
+              if (err) { console.log(err); return;}
+              console.log("awardPtsOnMention Users in db: \n", slackletes, "\n");
+              //give them all points! 
+              slackletes.forEach( slacker => slacker.award(totalPts));
+            });
+      });
   }
   
 }
+
+
+
 
 module.exports = ScoreKeeper;
 
