@@ -72,8 +72,10 @@ function logErr(msg, err) {
 //get 1 or more users and strip off special characters
 //(example msg) 'asdasda <@U0KDPC4H2> :smile:'
 function getUserIdArray(msg){
-  return msg.text.match(/<@(.*)>/g)
-    .map( userId => userId.substring(2, userId.length-1) );
+  return msg.text.match(/<@(\w+|\d+)>/g)
+    //now turn <@U0KDPC4H2> => U0KDPC4H2
+    .map( userId =>  userId.match(/\d+|\w+/g)[0] );
+    
 };
 
 //get 1 or more reactions and strip off special characters
@@ -141,7 +143,7 @@ var ScoreKeeper = {
   awardPtsOnMention: function(bot,msg){
     let reactionsArray = getReactionArray(msg);
     let userIdArray = getUserIdArray(msg);
-    
+    console.log('awardPtsOnMention: arrays:\n',reactionsArray, "\n", userIdArray);
     let findTheseReactions = [];
     reactionsArray.forEach( reactName => findTheseReactions.push({reaction: reactName }) );
     //find all the medals used in msg
@@ -157,7 +159,7 @@ var ScoreKeeper = {
           let totalPts = results.map(obj => obj.value)
             .reduce( (prev,curr) => prev + curr, 0 );
           console.log(totalPts);
-          //go find the slackletes who were mentioned
+          //go find the slackletes who were mentioned and give all of them points
           Slacklete.find()
             .or( {slack_id: {"$in":userIdArray} })
             .exec( (err, slackletes) => {
