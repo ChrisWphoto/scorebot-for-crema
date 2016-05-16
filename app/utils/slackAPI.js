@@ -8,9 +8,11 @@ var axios = require('axios');
 const SLACK_URL = 'https://slack.com/api';
 
 var methods = {
-
-  getUserInfo: (slack_id, token) =>
-    new Promise( (resolve, reject) => {
+  
+  
+  getUserInfo: (slack_id, token) => {
+    console.log('getUserInfo:', slack_id, token);
+    return new Promise( (resolve, reject) => {
       axios.get(SLACK_URL +'/users.info', {
         params: {
           token: token,
@@ -18,10 +20,12 @@ var methods = {
         }
       })
       .then( res => {
-        console.log("returned from slack:", res.data.user.name);
-        res.data.error ? reject(res.data) : resolve(res.data)
-      });
-    }),
+        console.log("SlackAPI returned user:", res.data.user.name); 
+        resolve(res.data); 
+      }); 
+        
+    })
+  },
 
   getTeamToken: (slack_id,cb) =>
     new Promise( (resolve, reject) => {

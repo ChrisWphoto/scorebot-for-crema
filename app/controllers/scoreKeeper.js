@@ -48,7 +48,7 @@ function addNewUser( msg, bot, medal ){
            reject => console.log('Error saving new slacklete:', reject) );
 };
 
-function saveMedalToDb( {reaction}, bot  ) {
+function saveMedalToDb( reaction, bot  ) {
   return new Promise( (resolve, reject) => {
     let newMedal = new Medal({
       reaction: reaction, 
@@ -80,7 +80,7 @@ function getUserIdArray(msg){
 
 //get 1 or more reactions and strip off special characters
 function getReactionArray(msg){
-  return msg.text.match(/:\w+:/g)
+  return msg.text.match(/:[^\s]+:/g)
     .map( reaction => reaction.substring(1, reaction.length -1) );
 };
 
@@ -114,7 +114,7 @@ var ScoreKeeper = {
             }
         });
       } else { //We did not find a existing medal for that team :(
-        saveMedalToDb(msg, bot).then( newMedal => {
+        saveMedalToDb(msg.reaction, bot).then( newMedal => {
           console.log("newMedal found:", newMedal.reaction);
           //See if the person who received medal exists in db
           query.findOne({slack_id: author}).then( slacklete => {
@@ -135,14 +135,17 @@ var ScoreKeeper = {
   },
 
   /*
-  Award points when user is mentioned in same sentence as reaction
-  e.g. @Jane :tada:  or :+1: @Bob
-  (example msg form slack) text: 'asdasda <@U0KDPC4H2> :smile:',
+  Award points when user is mentioned in same sentence as reaction.
+  If new reactions are used add them to the DB with a random value
+  If new user is mentioned, add them to the DB with a radnomd value
+  The next time that reaction is used the saved medal value will be used
+  
+  (example msg form slack) text: '<@U0KDPC4H2>: <@ASDADASDA> you are awesome :tada: :+1:',
   */
-  // TODO / NOTE: this function does not create new medals or users it only operates on existing ones. 
+   
   awardPtsOnMention: function(bot,msg){
     let reactionsArray = getReactionArray(msg);
-    let userIdArray = getUserIdArray(msg);
+    let userIdArray = getUserIdArray(msg); 
     console.log('awardPtsOnMention: arrays:\n',reactionsArray, "\n", userIdArray);
     let findTheseReactions = [];
     reactionsArray.forEach( reactName => findTheseReactions.push({reaction: reactName }) );
@@ -152,11 +155,13 @@ var ScoreKeeper = {
           { team_id: msg.team },
           { $or: findTheseReactions }  
       ])
-      .exec( (err, results) => {
+      .exec( (err, medalResults) => {
           if (err) { console.log(err); return;}
-          console.log("awardPtsOnMention reactions in db: \n", results, "\n");
-          //sum up all the points we got back
-          let totalPts = results.map(obj => obj.value)
+          console.log("awardPtsOnMention reactions in db: \n", medalResults);
+          //save medals that are not currently in db 
+          //Note: the value of these new medals will not be awarded this time round
+          checkNewMedalsAndSave(reactionsArray,medalResults,bot);
+          let totalPts = medalResults.map(obj => obj.value)
             .reduce( (prev,curr) => prev + curr, 0 );
           console.log(totalPts);
           //go find the slackletes who were mentioned and give all of them points
@@ -167,13 +172,91 @@ var ScoreKeeper = {
               console.log("awardPtsOnMention Users in db: \n", slackletes, "\n");
               //give them all points! 
               slackletes.forEach( slacker => slacker.award(totalPts));
+              //
+              checkNewSlackletesAndSave(userIdArray,slackletes,bot);
             });
       });
   }
   
 }
 
+//filter out slackers that are already in DB
+function checkNewSlackletesAndSave(userIdArray, usersInDB, bot){
+  if (userIdArray.length == usersInDB.length) return;
+  let slackletesToSave = userIdArray.filter( userId => {
+      var keep = true;
+      usersInDB.forEach( userInDB => {
+        if (userInDB.slack_id == userId)
+          keep = false;
+      })
+      return keep; 
+    });
+    console.log('New Slackletes who will be saved', slackletesToSave);
+    saveNewSlackletes(slackletesToSave, bot);   
+};
+//Get user info from slack api and save them to DB
+function saveNewSlackletes(slackletesToSave, bot){  
+  let slackApiCalls = slackletesToSave.map( slackID => {
+    return SlackAPI.getUserInfo(slackID, bot.config.bot.token); 
+  });
+  let newSlackletes = [];
+  //execute calls to slack API
+  Promise.all(slackApiCalls)
+    .then(
+      (userArray) => {
+        userArray.map( ({user}) => {
+          newSlackletes.push(
+            {
+              score: Math.ceil(25 * Math.random()), //rand val between 1 & 25,
+              slack_id: user.id,
+              name: user.real_name ? user.real_name : user.name,
+              team_id: bot.team_info.id,
+              team_name: bot.team_info.name 
+            })  
+          });
+          Slacklete.collection.insert(newSlackletes, (err, docs) => {
+            if (err) console.log('Error saving new slackletes:',err);
+            console.log('returned new collection.insert slackletes',docs);
+          }),
+      (err) => console.log('promise.all',err)
+      }
+    );   
+};
 
+
+//take array of reaction names and check if there are any new ones
+function checkNewMedalsAndSave(reactionsArray, reactionsAlrdyInDB, bot){
+  return new Promise( (resolve, reject) => {
+    if (reactionsArray.length == reactionsAlrdyInDB.length){
+      resolve('No medals to save');
+    }  
+    let reactionsToSave = reactionsArray.filter( reactName => {
+      var keep = true;
+      reactionsAlrdyInDB.forEach( reactInDB => {
+        if (reactInDB.reaction == reactName)
+          keep = false;
+      })
+      return keep; 
+    });
+    //push all these new reaction to the db with random values between 1-25
+    let medalArray = [];
+    reactionsToSave.forEach(reaction => medalArray.push(
+      {
+        reaction: reaction, 
+        value: Math.ceil(25 * Math.random()), //rand val between 1 & 25
+        team_id: bot.team_info.id
+      }
+     )
+    );
+    console.log('medalArray', medalArray);
+    Medal.collection.insert(medalArray, (err, docs) =>{
+      if (err){console.log("error insertMany", err); reject(err);} 
+      console.log('Docs returned form insert many', docs);
+      resolve("medals saved");  
+    })  
+  })
+  .catch( err => console.log('Error saving new medals to DB', err) );    
+};
 
 
 module.exports = ScoreKeeper;

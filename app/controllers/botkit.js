@@ -89,22 +89,16 @@ controller.on('rtm_close',function(bot) {
 //DIALOG ======================================================================
 
 /*
-award points to user mentioned + reactions
-e.g. @Jane :tada:  or :+1: @Bob
+award points to all users mentioned + reactions
+e.g. "@Jane :tada:" or ":+1: @Bob @billy"
 (example msg form slack) text: 'asdasda <@U0KDPC4H2> :smile:',
+note: (.*) matches any character except new line char.
 */
-//'@\w+(.*):(.*):|:(.*):(.*)@\w+'
-controller.hears('<@(.*):(.*):|:(.*):(.*)<@(.*)','ambient',function(bot,message) {
-  console.log('Ambient:\n', message, "\n");
+controller.hears('<@(.*)>(.*):(.*):|:(.*):(.*)<@(.*)>','ambient',function(bot,message) {
+  console.log('Ambient from team:', message.team, 'msg text:', message.text );
   ScoreKeeper.awardPtsOnMention(bot,message);
 });
 
-
-
-controller.hears('^stop','direct_message',function(bot,message) {
-  bot.reply(message,'Goodbye');
-  bot.rtm.close();
-});
 
 //set value of medal
 controller.hears(['set', '=', 'make (.*) equal', 'make (.*) worth'],'direct_message,direct_mention',function(bot,message) {
@@ -153,48 +147,23 @@ controller.on('channel_joined',function(bot,message) {
 });
 
 
-
-//declar var for storing pre-emptive call to db for teams scores
-//sometimes async calls can cause the conversation to create a race condition. 
-//Read more here about the issue https://github.com/howdyai/botkit/issues/20
-var AllScoresText;
-
-//Post the scoreboard to the channel 
-controller.hears(['my score','winning'],['direct_mention, direct_message'],function(bot,message) {
-  scoreboard.getAllScoresText(bot.team_info.id).then((text) => {
-      console.log(text, "text stuff");
-      AllScoresText = text;
-      bot.startConversation(message, askToSeeScores);
+//Post users score to the channel 
+controller.hears(['my score','myscore', 'my level','my points','my karma','have points'],['direct_mention, direct_message'],function(bot,message) {
+  scoreboard.getMyScore(message.user).then( (text) => {
+    bot.reply(message, text);
   });
 });
 
-askToSeeScores = function(response, convo) {
-  convo.ask("Do you want to see everyone's score or just yours?", function(res, convo) {
-    console.log("response", res);
-    if(res.text.indexOf("everyone") > -1){
-      convo.say("All I do is WIN WIN WIN :slack: :tada: :boom:");
-      convo.say(AllScoresText);  
-      console.log("getting all scores");
-      convo.next();
-    }
-    else if(res.text.indexOf("me") > -1 || res.text.indexOf("my") > -1){
-      scoreboard.getMyScore(res.user).then( (text) => {
-        convo.say(text);
-        console.log("the text", text);
-        convo.next();
-      });
-    }
-    else {
-      convo.say("Alrighty! Goodbye");
-      convo.next();
-    }
+//Post whole scoreboard to the channel 
+controller.hears(['who is in first','winning','on top','place'],['direct_mention, direct_message'],function(bot,message) {
+  scoreboard.getAllScoresText(bot.team_info.id).then((text) => {
+    bot.reply(message,"All I do is WIN WIN WIN :slack: :tada: :boom:");
+    bot.reply(message, text);
+      
   });
-}
+});
 
-
-
-
-/* This should be last! */
+/* This should be the last listener! */
 //Default reply for scorebot - No thing above matched 
 controller.on('direct_mention,direct_message',function(bot,message) {
     console.log('Default Reply by scorebot:\n', message);

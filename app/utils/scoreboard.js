@@ -34,9 +34,9 @@ module.exports = {
     var deferred = Q.defer();
     Slacklete.findOne({slack_id: user}).then(function(slacklete) {
       if (slacklete) {
-        deferred.resolve("Your score is " + slacklete.score);
+        deferred.resolve("Your level of win is: :tada: *" + slacklete.score + "* :tada:");
       } else {
-        deferred.reject("No slacklete found with that ID");
+        deferred.reject("No slacklete found with that ID :frowning:");
       }
     });
     return deferred.promise;
