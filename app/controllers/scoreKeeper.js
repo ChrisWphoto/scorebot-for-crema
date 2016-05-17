@@ -93,7 +93,8 @@ Note: Slack API Token is at bot.config.bot.token
 // Calculates and delegates scores
 var ScoreKeeper = {
   
-  analyze: function(bot, msg) {
+  
+  reactionAdded: function(bot, msg) {
     //get author of original post
     let author = msg.item_user;
     let query = Slacklete.where({ slack_id: author });

@@ -118,7 +118,7 @@ controller.hears(['show (.*) medals', 'show medals', 'show (.*) reactions', 'sho
 //deal with reactions being added and removed
 controller.on('reaction_added,reaction_removed',function(bot,message) {
     console.log('Reaction from slack:', message);
-    ScoreKeeper.analyze(bot, message);
+    ScoreKeeper.reactionAdded(bot, message);
 });
 
 //reset scores of slackletes
