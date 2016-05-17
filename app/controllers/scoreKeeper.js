@@ -93,7 +93,11 @@ Note: Slack API Token is at bot.config.bot.token
 // Calculates and delegates scores
 var ScoreKeeper = {
   
-  
+  /* 
+    Takes msg of type reaction_added
+    Saves medal to db if new
+    Saves user to db if new after looking up real name on slack api  
+   */
   reactionAdded: function(bot, msg) {
     //get author of original post
     let author = msg.item_user;
