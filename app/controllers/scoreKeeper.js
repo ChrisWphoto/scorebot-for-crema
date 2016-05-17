@@ -93,7 +93,7 @@ Note: Slack API Token is at bot.config.bot.token
 // Calculates and delegates scores
 var ScoreKeeper = {
   
-  analyze: function( bot, msg ) {
+  analyze: function(bot, msg) {
     //get author of original post
     let author = msg.item_user;
     let query = Slacklete.where({ slack_id: author });
@@ -133,6 +133,8 @@ var ScoreKeeper = {
       }
     });
   },
+  
+  
 
   /*
   Award points when user is mentioned in same sentence as reaction.
@@ -142,7 +144,6 @@ var ScoreKeeper = {
   
   (example msg form slack) text: '<@U0KDPC4H2>: <@ASDADASDA> you are awesome :tada: :+1:',
   */
-   
   awardPtsOnMention: function(bot,msg){
     let reactionsArray = getReactionArray(msg);
     let userIdArray = getUserIdArray(msg); 

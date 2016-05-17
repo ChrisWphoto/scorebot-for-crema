@@ -5,6 +5,7 @@
 "use strict";
 
 var Medal         = require('../models/medal');
+var Slacklete     =require('../models/slacklete');
 
 
 
@@ -22,14 +23,6 @@ function stripColons(array){
 };
 
 
-/*
-Each team can have it's own set of medals.
-There is a default value for each medal.
-step 1: verfiy reaction is legit slack reaction (implement later) 
-step 2: If exist for that team return/update that medal
-step 2a: if NOT exist for team use default. 
- */ 
-
 function saveMedalValue(medalArray, medalValArray, bot, msg){
   console.log(medalValArray);
   let medalName   = stripColons(medalArray)[0]; //grab only first reaction name
@@ -45,10 +38,23 @@ function saveMedalValue(medalArray, medalValArray, bot, msg){
     console.log('Medal Updated via conversation:\n', newMedal);
     bot.reply(msg,"The game has changed! :" + newMedal.reaction + ": is now worth " + newMedal.value + "pts.");
   }); 
-}
+};
+
+function resetScoresInDB(bot,msg){
+  Slacklete.find({team_id: bot.team_info.id})
+    .exec( (err, slackletes) => {
+      if (err){ console.log('Error finding slacklete by teamid:',err); return; }
+      slackletes.forEach( (slacker) => slacker.resetScore() );
+      setTimeout(() =>{
+        bot.reply(msg,"It's done. Everyone is reset. Let the games begin anew! :champagne:");  
+      }, 1700);
+      
+    }); 
+};
 
 //Global help text for scorebot commands 
-var scorebotCommandsText = "You can ask me things like ```@scorebot show me all the medals``` ```@scorebot make :smile: = 40pts``` ```@scorebot who's winning?```";
+let scorebotCommandsText = "You can ask me things like ```@scorebot what's my score?``` ```@scorebot show me all the medals``` ```@scorebot make :smile: = 40pts``` ```@scorebot who's winning?```";
+let scorebotHelpText = "No problem! you can type: `@scorebot commands` in any channel I'm in an see all my skills";
 
 var Converse = {
   
@@ -96,6 +102,30 @@ var Converse = {
     bot.reply(msg, scorebotCommandsText);
   },
   
+  resetScores: function(bot, msg){
+    bot.startConversation(msg, ( res, convo ) => {
+      let areYouSure = "Are you sure you want to reset everyone's score? Type `reset scores` or just say no."
+      convo.ask(areYouSure, [
+        {
+          pattern: 'reset',
+          callback: (res, convo) => {
+            convo.say("OK! You asked for it. Resetting everyone's score...");
+            resetScoresInDB(bot, msg);
+            convo.next();       
+          }
+        },
+        {
+          pattern: bot.utterances.no,
+          callback: function(response,convo) {
+            convo.say(':sweat: Phew that was close!');
+            convo.next();
+          }
+        }
+      ])
+    });
+  },
+  
+  
   help: function(bot, msg) {
     let aboutMeText = "I am Mr. Scorebot and I award points of awesomeness to people who get reactions on their messages.";
     //prepare and object that can be passed to YesSeeMeInAction via bind
@@ -110,7 +140,7 @@ var Converse = {
         {
           pattern: bot.utterances.no,
           callback: function(response,convo) {
-            convo.say("No problem!\n" + scorebotCommandsText);
+            convo.say(scorebotHelpText);
             convo.next();
           }
       }
@@ -123,8 +153,6 @@ var Converse = {
 function YesSeeMeInAction(res,convo){
   //grab values from help function above
   let bot = this.helpObj.botFromHelp;
-  console.log('yes bot res\n', this.myObj);
-  console.log('this.bot',this.help);
   //add robot_face to last message from user
   bot.api.reactions.add({
     timestamp: res.ts,
@@ -145,7 +173,7 @@ function YesSeeMeInAction(res,convo){
       {
         pattern: bot.utterances.no,
         callback: function(response,convo) {
-          convo.say("No problem!\n you can type: '@scorebot commands' in any channel I am invited to.");
+          convo.say(scorebotHelpText);
           convo.next();
         }
       }

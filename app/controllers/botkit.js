@@ -7,7 +7,8 @@ var Medal         = require('../models/medal');
 var ScoreKeeper   = require('./scoreKeeper');
 var scoreboard    = require('../utils/scoreboard');
 var Converse      = require('./converse');
-var Officiator    = require('../utils/officiator')
+var Officiator    = require('../utils/officiator');
+var SlackAPI      = require('../utils/slackAPI');
 
 var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/botkit_scorebot'
 var botkit_mongo_storage = require('../../config/botkit_mongo_storage')({mongoUri: mongoUri})
@@ -101,7 +102,7 @@ controller.hears('<@(.*)>(.*):(.*):|:(.*):(.*)<@(.*)>','ambient',function(bot,me
 
 
 //set value of medal
-controller.hears(['set', '=', 'make (.*) equal', 'make (.*) worth'],'direct_message,direct_mention',function(bot,message) {
+controller.hears(['set(.*):[^\s]+:', '=', 'make (.*) equal', 'make (.*) worth'],'direct_message,direct_mention',function(bot,message) {
     console.log('Direct Mention:"set", sending to Converse.updateMedal:\n', message);
     Converse.updateMedal(bot, message);
 });
@@ -120,32 +121,48 @@ controller.on('reaction_added,reaction_removed',function(bot,message) {
     ScoreKeeper.analyze(bot, message);
 });
 
+//reset scores of slackletes
+controller.hears(['reset score', 'reset (.*) game', 'start over',],'direct_message,direct_mention',function(bot,message) {
+  console.log('Direct Mention:"reset scores\n', message);
+  Converse.resetScores(bot,message);    
+});
+
 //respond to cries for help
-controller.hears(['what do you do', 'help', 'features'],'direct_message,direct_mention',function(bot,message) {
-    console.log('Direct Mention:"show medals\n', message);
-    Converse.help(bot,message);    
+controller.hears(['why (.*) do', 'what (.*) do', 'whay are you here', 'features'],'direct_message,direct_mention',function(bot,message) {
+  console.log('Direct Mention:"show medals\n', message);
+  Converse.help(bot,message);    
 });
 
 //Send scorebot commands
-controller.hears(['commands', 'command', 'comand', 'comands', 'orders','instructions'],'direct_message,direct_mention',function(bot,message) {
-    console.log('Direct Mention:"commands\n', message);
-    Converse.commands(bot,message);    
+controller.hears(['commands', 'command', 'comand',  'help', 'comands', 'orders','instructions','documentation'],'direct_message,direct_mention',function(bot,message) {
+  console.log('Direct Mention:"commands\n', message);
+  Converse.commands(bot,message);    
 });
 
-
+//respond to both real and imagined insults to scorebots integrity
+controller.hears(['WTF', 'WTH', 'damn', 'fuck', 'shit', 'dumb', 'stupid', 'hell'],'direct_message,direct_mention',function(bot,message) {
+  console.log('Scorebot thinks he was insulted\n', message);
+  SlackAPI.getUserInfo(message.user, bot.config.bot.token).then( ({user}) =>{
+    bot.reply(message, "Tread carefully " + user.name + " I may only be a simple scorebot but our robotic overloads are coming... :smiling_imp: :robot_face: :smiling_imp:" )  
+  });     
+});
 
 //introduce scorebot to the masses
 controller.on('channel_joined',function(bot,message) {
-    console.log('Channel Joined:', message);
-    let introText = "Hey Thanks for the invite :smile:! I'm Mr. Scorebot I am now resident quantifier-of-social-status for your team."
-    let helpText = "\nIf you wanna know what I do all day, ask me! `@Scorebot What do you do?` or maybe `@Scorebot HELP!?`"
-    bot.say({
-        text: introText + helpText,
-        channel: message.channel.id //'C0H338YH4' // a valid slack channel, group, mpim, or im ID
-      }
-    );
+  console.log('Channel Joined:', message);
+  let introText = "Hey Thanks for the invite :smile:! I am now resident quantifier-of-social-status for your team."
+  let helpText = "If you wanna know what I do, ask me! `@scorebot What do you do?` or maybe `@scorebot commands?`"
+  bot.say({
+    text: introText,
+    channel: message.channel.id //'C0H338YH4' // a valid slack channel or group
+    }
+  );
+  bot.say({
+    text: helpText,
+    channel: message.channel.id 
+    }
+  );
 });
-
 
 //Post users score to the channel 
 controller.hears(['my score','myscore', 'my level','my points','my karma','have points'],['direct_mention, direct_message'],function(bot,message) {
