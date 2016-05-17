@@ -4,7 +4,6 @@ var app            = express();
 var bodyParser     = require('body-parser');
 var http           = require('http').Server(app);
 var dotenv         = require('dotenv');
-
 // Routes ===========================================
 var slash   = require('./app/routes/slashCommands');
 
@@ -20,9 +19,10 @@ dotenv.load();
 app.use(express.static(__dirname + '/public'))
 
 //set and load mongoUri
-// var mongoUri = process.env.MONGOLAB_URI || 'mongodb://localhost/botkit_scorebot';
+// var mongoUri = 'mongodb://localhost/test_scorebot';
 // console.log('Connecting to Mongo:',mongoUri);
 // mongoose.connect(mongoUri);
+// console.log('Connected:',mongoUri);
 
 
 //parsing
