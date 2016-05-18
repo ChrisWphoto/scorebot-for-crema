@@ -126,7 +126,7 @@ var Converse = {
   },
   
   
-  help: function(bot, msg) {
+  whatDoYouDo: function(bot, msg) {
     let aboutMeText = "I am Mr. Scorebot and I award points of awesomeness to people who get reactions on their messages.";
     //prepare and object that can be passed to YesSeeMeInAction via bind
     this.helpObj = {botFromHelp: bot};

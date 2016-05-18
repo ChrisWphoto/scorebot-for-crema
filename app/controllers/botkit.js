@@ -67,9 +67,9 @@ controller.on('create_bot',function(bot,team) {
         if (err) {
           console.log(err);
         } else {
-          convo.say('I am Mr. Scorebot');
-          convo.say('/invite me to a channel and I will award points to the coolest people in the office');
-          convo.say("you can also type `@mrscorebot help!`");
+          convo.say('I am Mr. Scorebot :robot_face:');
+          convo.say('/invite me to a channel `/invite scorebot` and I will award points to the coolest people in the office!');
+          convo.say("you can also type `@scorebot help!`");
         }
       });
     });
@@ -130,7 +130,14 @@ controller.hears(['reset score', 'reset (.*) game', 'start over',],'direct_messa
 //respond to cries for help
 controller.hears(['why (.*) do', 'what (.*) do', 'whay are you here', 'features'],'direct_message,direct_mention',function(bot,message) {
   console.log('Direct Mention:"show medals\n', message);
-  Converse.help(bot,message);    
+  Converse.whatDoYouDo(bot,message);    
+});
+
+//Send scorebot commands
+controller.hears(['help'],'direct_message',function(bot,message) {
+  console.log('Direct Mention:"commands\n', message);
+  Converse.commands(bot,message);
+  bot.reply(message, "Note: I only listen on channels in which I am inivted. `/invite scorebot`");    
 });
 
 //Send scorebot commands
