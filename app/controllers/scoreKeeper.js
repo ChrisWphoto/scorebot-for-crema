@@ -128,9 +128,8 @@ var ScoreKeeper = {
               console.log('slacklete ' + slacklete.slack_id + ' found');
               updateScore(slacklete, msg, newMedal);
             } else { //user not found, creating user...
-                console.log('New Slacklete Found Saving...');
+                console.log('Saving new Slacklete');
                 //Save user and update their score
-                console.log("\n\nbot config: ", bot.config.bot, "\n\n");
                 addNewUser(msg, bot, newMedal);
               }
             });  
