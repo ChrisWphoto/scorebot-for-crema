@@ -172,11 +172,7 @@ controller.hears(['my score','myscore', 'my level','my points','my karma','have 
 
 //Post whole scoreboard to the channel 
 controller.hears(['who is in first','winning','on top','place'],['direct_mention, direct_message'],function(bot,message) {
-  scoreboard.getAllScoresText(bot.team_info.id).then((text) => {
-    bot.reply(message,"All I do is WIN WIN WIN :slack: :tada: :boom:");
-    bot.reply(message, text);
-      
-  });
+  ScoreKeeper.getLeaderBoard(bot, message);
 });
 
 /* This should be the last listener! */

@@ -4,6 +4,7 @@ var Medal         = require('../models/medal');
 var Slacklete     = require('../models/slacklete');
 var SlackAPI      = require('../utils/slackAPI');
 var Controller    = require('./botkit');
+var Scoreboard    = require('../utils/scoreboard');
 
 //Helper Functions for analyze method --->
 
@@ -133,8 +134,6 @@ var ScoreKeeper = {
     });
   },
   
-  
-
   /*
   Award points when user is mentioned in same sentence as reaction.
   If new reactions are used add them to the DB with a random value
@@ -179,13 +178,7 @@ var ScoreKeeper = {
   },
   
   /**
-   * getMyScore
-   *  getScore(userID)
-   *    if (user) send score
-   *    else 
-   *      Tell use they are new
-   *      add reaction to their message
-   *      and tell them to try again  
+   Get user score but first check if we need to welcome them to the game. 
    */
   getMyScore: function(bot,msg) {
     Slacklete.findOne({slack_id: msg.user})
@@ -195,10 +188,32 @@ var ScoreKeeper = {
           bot.reply(msg, yourScoreText);
         } 
         else { //User does not exist in DB
+          bot.reply(msg, "Hmmm... I don't see you in my leaderboard of social standing. Let's fix that...");
           //we are going to add a reaction to their message which will add them to the db automatically
           //via the reactionAdded() function
-          bot.reply(msg, "Hmmm... I don't see you my leaderboard of social standing. Let's fix that...");
-          setTimeout( () => {
+          addReactAndWelcomeUser(bot,msg);
+        }
+      });
+  },
+  
+  //get leaderboard but first check if we need to welcome them to the game.
+  getLeaderBoard: function(bot,msg){
+    Scoreboard.getAllScoresText(bot.team_info.id)
+      .then(
+        (leaderBoardText) => {
+        bot.reply(msg,"All I do is WIN WIN WIN :slack: :tada: :boom:");
+        bot.reply(msg,leaderBoardText);
+      })
+      .catch( (NoLeaderBoardReject) => {
+        bot.reply(msg, "Hmm... The leaderboard of social standing does exists yet, let's fix that...");
+        addReactAndWelcomeUser(bot,msg);
+      })
+  }     
+}
+
+//adds a reaction to a user who have never gotten one before
+function addReactAndWelcomeUser(bot,msg) {
+  setTimeout( () => {
             bot.api.reactions.add({
               timestamp: msg.ts,
               channel: msg.channel,
@@ -211,16 +226,13 @@ var ScoreKeeper = {
               } else {
                 setTimeout( () => {
                   bot.reply(msg, "There we go! You've been given you're first medal. :star2: let the Games Begin!");
-                  bot.reply(msg, "Now `@scorebot my score` will work");  
+                  bot.reply(msg, "`@scorebot my score` will work now too");  
                 }, 1500);  
               }
             });  
           }, 1500 );
-          
-        }
-      });
-  }     
 }
+
 
 //filter out slackers that are already in DB
 function checkNewSlackletesAndSave(userIdArray, usersInDB, bot){
