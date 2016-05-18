@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="en-US">
 <head>
-  <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" type="text/css" href="/styles/home.css">
   <link rel="stylesheet" type="text/css" href="/styles/config.css">
 </head>
@@ -11,9 +11,12 @@
       <br/>
       <div class="grid">
         <div class="col tagline"> 
-          <h1> Rule the office</h1>
-          <h3> Make everyday conversation a competition. </h3>
-          <a href='https://slack.com/oauth/authorize?client_id=<%= process.env.SLACK_ID %>&redirect_uri=<%= process.env.SLACK_REDIRECT %>new&scope=bot,commands'><img alt="Add to Slack" height="40" width="139" src="/images/add_to_slack.png"></a>
+          <div class="tagline-wrapper">
+            <h1> RULE THE OFFICE</h1>
+            <h3> Make everyday conversation a competition. </h3>
+            <a href='https://slack.com/oauth/authorize?client_id=<%= process.env.SLACK_ID %>&redirect_uri=<%= process.env.SLACK_REDIRECT %>new&scope=bot,commands'><img alt="Add to Slack" height="40" width="139" src="/images/add_to_slack.png"></a>
+          </div>
+          
         </div>
         <div class="col">
          <img id="ipadExample" src="/images/ipad-example.png"/>
