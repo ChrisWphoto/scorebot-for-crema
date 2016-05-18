@@ -166,9 +166,8 @@ controller.on('channel_joined',function(bot,message) {
 
 //Post users score to the channel 
 controller.hears(['my score','myscore', 'my level','my points','my karma','have points'],['direct_mention, direct_message'],function(bot,message) {
-  scoreboard.getMyScore(message.user).then( (text) => {
-    bot.reply(message, text);
-  });
+  console.log('@scorbot: myscore:\n', message);
+  ScoreKeeper.getMyScore(bot,message);
 });
 
 //Post whole scoreboard to the channel 

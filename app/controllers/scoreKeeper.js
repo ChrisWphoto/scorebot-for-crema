@@ -35,11 +35,6 @@ function saveUserToDb( {user}, msg, medal, bot ){
 /**
  * Get slackletes info from slack api 
  * then call saveUserToDb()
- *
- * @param {Object} msg
- * @param {String} token
- * @param {Object} medal
- * @return void
  */
 function addNewUser( msg, bot, medal ){
   console.log("adding new slacklete:", msg.item_user, bot.config.bot.token);
@@ -181,8 +176,50 @@ var ScoreKeeper = {
               checkNewSlackletesAndSave(userIdArray,slackletes,bot);
             });
       });
-  }
+  },
   
+  /**
+   * getMyScore
+   *  getScore(userID)
+   *    if (user) send score
+   *    else 
+   *      Tell use they are new
+   *      add reaction to their message
+   *      and tell them to try again  
+   */
+  getMyScore: function(bot,msg) {
+    Slacklete.findOne({slack_id: msg.user})
+      .then( (slacklete) => {
+        if (slacklete) { //usr exists in db
+          let yourScoreText = slacklete.name +", your level of win is: :tada: *" + slacklete.score + "* :tada:";
+          bot.reply(msg, yourScoreText);
+        } 
+        else { //User does not exist in DB
+          //we are going to add a reaction to their message which will add them to the db automatically
+          //via the reactionAdded() function
+          bot.reply(msg, "Hmmm... I don't see you my leaderboard of social standing. Let's fix that...");
+          setTimeout( () => {
+            bot.api.reactions.add({
+              timestamp: msg.ts,
+              channel: msg.channel,
+              name: 'star2',
+            },function(err) {
+              if (err) {
+                console.log('GetmyScore: err adding reaction', err); 
+                bot.reply(msg, "oops, nvm I done goofed... :flushed:");
+                return;
+              } else {
+                setTimeout( () => {
+                  bot.reply(msg, "There we go! You've been given you're first medal. :star2: let the Games Begin!");
+                  bot.reply(msg, "Now `@scorebot my score` will work");  
+                }, 1500);  
+              }
+            });  
+          }, 1500 );
+          
+        }
+      });
+  }     
 }
 
 //filter out slackers that are already in DB

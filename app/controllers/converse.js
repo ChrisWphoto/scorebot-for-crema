@@ -5,8 +5,8 @@
 "use strict";
 
 var Medal         = require('../models/medal');
-var Slacklete     =require('../models/slacklete');
-
+var Slacklete     = require('../models/slacklete');
+var RegExPatterns = require('../utils/regexPatterns');
 
 
 function getReactions(msg) {
@@ -115,7 +115,7 @@ var Converse = {
           }
         },
         {
-          pattern: bot.utterances.no,
+          pattern: RegExPatterns.no,
           callback: function(response,convo) {
             convo.say(':sweat: Phew that was close!');
             convo.next();
@@ -134,11 +134,11 @@ var Converse = {
       convo.say(aboutMeText);
       convo.ask('Do you wanna see me in action?',[
         {
-          pattern: bot.utterances.yes,
+          pattern: RegExPatterns.yes,
           callback: YesSeeMeInAction.bind(this) //this function has access to the "bot" becase of bind & helpObj
         },
         {
-          pattern: bot.utterances.no,
+          pattern: RegExPatterns.no,
           callback: function(response,convo) {
             convo.say(scorebotHelpText);
             convo.next();
@@ -163,7 +163,7 @@ function YesSeeMeInAction(res,convo){
     convo.say('Did you catch it? I just put a :robot_face: on your last message, which means you get points! :tada:');
     convo.ask("Do you wanna see things you can ask me?.", [
       {
-        pattern: bot.utterances.yes,
+        pattern: RegExPatterns.yes,
         callback: function(res,convo) {
           console.log('yes see what I do', res);            
           convo.say(scorebotCommandsText);
@@ -171,7 +171,7 @@ function YesSeeMeInAction(res,convo){
         }
       },
       {
-        pattern: bot.utterances.no,
+        pattern: RegExPatterns.no,
         callback: function(response,convo) {
           convo.say(scorebotHelpText);
           convo.next();
