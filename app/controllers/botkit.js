@@ -178,7 +178,7 @@ controller.hears(['my score','myscore', 'my level','my points','my karma','have 
 });
 
 //Post whole scoreboard to the channel 
-controller.hears(['who is in first','winning','on top','place'],['direct_mention, direct_message'],function(bot,message) {
+controller.hears(['who is in first','winning','on top','place'],'direct_mention,direct_message',function(bot,message) {
   ScoreKeeper.getLeaderBoard(bot, message);
 });
 
