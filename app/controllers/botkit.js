@@ -133,7 +133,7 @@ controller.hears(['why (.*) do', 'what (.*) do', 'whay are you here', 'features'
   Converse.whatDoYouDo(bot,message);    
 });
 
-//Send scorebot commands
+//Send scorebot help msg
 controller.hears(['help'],'direct_message',function(bot,message) {
   console.log('Direct Mention:"commands\n', message);
   Converse.commands(bot,message);
@@ -172,7 +172,7 @@ controller.on('channel_joined',function(bot,message) {
 });
 
 //Post users score to the channel 
-controller.hears(['my score','myscore', 'my level','my points','my karma','have points'],['direct_mention, direct_message'],function(bot,message) {
+controller.hears(['my score','myscore', 'my level','my points','my karma','have points'],'direct_mention,direct_message',function(bot,message) {
   console.log('@scorbot: myscore:\n', message);
   ScoreKeeper.getMyScore(bot,message);
 });
