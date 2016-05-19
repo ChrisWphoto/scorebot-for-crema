@@ -126,6 +126,12 @@ body {
   font-size:22px;
 }
 
+.fullWidth a {
+  color: white;
+  padding-top: 20px;
+  font-family: 'Lato', sans-serif;
+}
+
 .width90 {
   vertical-align: middle;
   display: table-cell;

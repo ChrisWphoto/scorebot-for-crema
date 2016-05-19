@@ -1,16 +1,14 @@
 # Scorebot built with Botkit
 
 The folks at [Botkit](https://github.com/howdyai/botkit) have done an amazing job at building a framework for (Slack) bots applications. They have included an [example](https://github.com/howdyai/botkit/blob/master/examples/slackbutton_bot.js) of creating a Slack app that can be installed with just an "Add to Slack" button, as well as an [adapter](https://github.com/howdyai/botkit-storage-mongo) allowing to use MongoDB for storage.
-
-Express mongo integration added by [Matthieu Varagnat](https://twitter.com/MVaragnat) 
-
+ 
 ## Features
 
 * Serves webpages through standard express routes
 ``` app/routes/routes.js ```
 
-* Uses Monk as MongoDB driver
-* Includes by default the three Botkit collections : Teams, Users, and Channels
+* Uses Mongoose as MongoDB driver
+* Includes by default the three Botkit collections : Teams, Users, and Channels (not being used here)
 
 ## Configuration
 

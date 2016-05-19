@@ -19,7 +19,7 @@
       <div class="grid rule-office">
         <div class="col tagline">
           <div class="tagline-wrapper">
-            <h1> RULE THE OFFICE</h1>
+            <h1> RULE THE OFFICE </h1>
             <h3> Make everyday conversation a competition. </h3>
             <a href='https://slack.com/oauth/authorize?client_id=<%= process.env.SLACK_ID %>&redirect_uri=<%= process.env.SLACK_REDIRECT %>new&scope=bot,commands'>
               <img id="addToSlack" alt="Add to Slack" src="/images/add_to_slack.png">
@@ -45,14 +45,15 @@
         
       <div class="fullWidth">
         <div class="width90">
-          <h3>Scorebot in Beta</h3>
+          <h3> <%= installed ? "Scorebot (beta) is now live for your team!" : "Scorebot in Beta"   %> </h3>
           <p> 
-            We'd love to hear about your experiece interacting with Mr. Scorebot
+            We'd love to hear about your experiece interacting with Mr. Scorebot <br/><br/> 
+            <a href="mailto:mitch@cremalab.com?subject=Feedback on Scorebot">Let Us Know</a>
           </p>  
         </div>
       </div>
       
-      <div class="faq-wrapper">
+      <div id="installed" class="faq-wrapper">
         <div class="faq-content">
           <h3>FAQ</h3>
           

@@ -9,7 +9,7 @@ module.exports = function(app) {
   app.get('/', function(req, res) {
     console.log("root")
 
-    res.render('root'); // load view/root.html file
+    res.render('root', {installed: ""}); // load view/root.html file
   });
 
   //new user creation - redirection from Slack
@@ -83,7 +83,7 @@ module.exports = function(app) {
             name: identity.team
           }
           startBot(team)
-          res.send("Your bot has been installed")
+          res.render('root', {installed: "Successfully Installed!"})
 
           saveUser(auth, identity)
         }
