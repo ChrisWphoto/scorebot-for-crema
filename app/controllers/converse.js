@@ -7,6 +7,7 @@
 var Medal         = require('../models/medal');
 var Slacklete     = require('../models/slacklete');
 var RegExPatterns = require('../utils/regexPatterns');
+var SlackAPI      = require('../utils/slackAPI');
 
 
 function getReactions(msg) {
@@ -65,36 +66,9 @@ var Converse = {
     if (arrayOfNumbers && arrayOfReactions){
       saveMedalValue(arrayOfReactions, arrayOfNumbers, bot, msg);
     }else { //Ask user to fill in missing info to set value of medal
-      console.log('Missing info trying to update medal',arrayOfNumbers, arrayOfReactions)
-      
-      //we are missing the reaction
-      if (!arrayOfReactions && arrayOfNumbers){
-        bot.startConversation(msg, ( res, convo ) => {
-          let question = "Hi :simple_smile: To update reactions I first need a reaction, send me :a_reaction: or click the face on the right." 
-          convo.ask(question, ( res, convo ) => {
-            let arrayOfReactions = getReactions(res);
-            if(arrayOfReactions) saveMedalValue(arrayOfReactions, arrayOfNumbers, bot, msg);
-            convo.next();
-          });
-        }); 
-      }
-      
-      //we are missing the value of the reaction
-      else if (arrayOfReactions && !arrayOfNumbers){
-        bot.startConversation(msg, ( res, convo ) => {
-          let question = "Hi :simple_smile: To update reactions I first need a number, send me a 5 a 10 or whatever number you want." 
-          convo.ask(question, ( res, convo ) => {
-            let arrayOfNumbers = getReactionValues(res);
-            if(arrayOfReactions) saveMedalValue(arrayOfReactions, arrayOfNumbers, bot, msg);
-            convo.next();
-          });
-        }); 
-      }
-
-      //we are missing both reaction and value
-      else {
-        bot.reply(msg,"I think you're trying to set the value of a reaction. Try sending this: :smirk: = 5");
-      }      
+      console.log('Missing info trying to update medal',arrayOfNumbers, arrayOfReactions);
+      let MedalErrText = "Well that didn't work :pensive: Try `@scorebot :smile: = 15`";
+      bot.reply(msg, MedalErrText);
     } 
   },
   
