@@ -1,38 +1,92 @@
 <!DOCTYPE html>
 <html dir="ltr" lang="en-US">
+
 <head>
   <link href='https://fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
+  <link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="/styles/home.css">
   <link rel="stylesheet" type="text/css" href="/styles/config.css">
 </head>
-  <body>
-    <div class="wrapper">    
-      <img src="/images/scorebot-logo.png"/>
-      <br/>
-      <div class="grid">
-        <div class="col tagline"> 
+
+<body>
+  <div class="wrapper">
+    <div class="wrapper-content">
+      <div class="header">
+        <img id="scorebot-header-img" src="/images/scorebot-logo.png" />
+        <img id="crema-logo" src="/images/Crema_logo_white.png" />
+      </div>
+      
+      <div class="grid rule-office">
+        <div class="col tagline">
           <div class="tagline-wrapper">
             <h1> RULE THE OFFICE</h1>
             <h3> Make everyday conversation a competition. </h3>
-            <a href='https://slack.com/oauth/authorize?client_id=<%= process.env.SLACK_ID %>&redirect_uri=<%= process.env.SLACK_REDIRECT %>new&scope=bot,commands'><img alt="Add to Slack" height="40" width="139" src="/images/add_to_slack.png"></a>
+            <a href='https://slack.com/oauth/authorize?client_id=<%= process.env.SLACK_ID %>&redirect_uri=<%= process.env.SLACK_REDIRECT %>new&scope=bot,commands'><img id="addToSlack" alt="Add to Slack" src="/images/add_to_slack.png"></a>
           </div>
-          
         </div>
         <div class="col">
-         <img id="ipadExample" src="/images/ipad-example.png"/>
+          <img id="ipadExample" src="/images/ipad-example.png" />
         </div>
-      <div>
+      </div>
+      
+      <div class="grid grid-gif -rtl">
+        <div class="col col-text -ltr">
+          <h3>Scorebot is the quantifier of social status for your team. He keeps track of all the most reactive people.</h3>
+          <a href='https://slack.com/oauth/authorize?client_id=<%= process.env.SLACK_ID %>&redirect_uri=<%= process.env.SLACK_REDIRECT %>new&scope=bot,commands'><img id="addToSlack" alt="Add to Slack" src="/images/add_to_slack.png"></a>
+        </div>
+        <div class="col col-gif">
+          <img id="gifExample" src="/images/gif-example.png" />
+        </div>
+      </div>
+        
+      <div class="fullWidth">
+        <div class="width90">
+          <h3>Scorebot in Beta</h3>
+          <p> 
+            We'd love to hear about your experiece interacting with Mr. Scorebot
+          </p>  
+        </div>
+      </div>
+      
+      <div class="faq-wrapper">
+        <div class="faq-content">
+          <h3>FAQ</h3>
+          
+          <div class="faq-question">
+            
+            <h4>Who is Scorebot?</h4>
+            <span>Scorebot is part of a new class of our social robot overlords. <i class="em em-scream"></i></span> 
+          </div>
+          
+          <div class="faq-question">
+            <h4>What does Scorebot actually do?</h4>
+            <span>
+              Once you <code> /invite Scorebot </code> to a channel he will listen for Slack reactions (emoji) to be used. When Scorebot sees a Slack reaction 
+              he will give that person points!
+            </span>  
+          </div>  
+          
+          <div class="faq-question">
+            <h4>What kind of Slack reactions give me points?</h4>
+            <span>
+              Any Slack reaction added to a message or in a mention will count. Like this, @laura you're the coolest!' 
+              <i class="em em-surfer"></i> <i class="em em---1"></i> 
+               
+            </span>  
+          </div>    
+            
+        </div>
+        <div class="madeWithLove">
+          <span> MADE WITH <i class="em em-heart"></i> </span>
+          <a href="http://crema.us" target="_blank">
+            <img id="crema-logo-bottom" src="/images/Crema_logo_white.png" />
+          </a>            
+          </div>  
       </div>
       
       
+      
     </div>
-  </body>
+  </div>
+</body>
 </html>
-
-
-
-
-
-
-
-

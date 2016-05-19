@@ -10,8 +10,35 @@ body {
   background-size: cover;
 }
 
-.wrapper img {
-  padding-top: 10%;
+#addToSlack{
+  width: auto;
+  height: 55px;
+}
+
+.header {
+  height: 100px;
+  width: 90%;
+  margin: 0 auto;
+  margin-bottom: 30px;
+}
+
+
+.header #scorebot-header-img {
+  height: 55px;
+  width: auto;
+  float: left;
+  margin-top: 21px;
+}
+
+.header #crema-logo {
+  height: 85px;
+  width: auto;
+  float: right;
+}
+
+.grid.rule-office {
+  width: 95%;
+  margin-right: 0;
 }
 
 .wrapper h2 {
@@ -31,7 +58,7 @@ body {
 }
 
 .tagline h1{
-  font-size: 98px;
+  font-size: 7vw;
   font-family: 'Lato', sans-serif;
   color: white;
   margin: 0;
@@ -44,7 +71,6 @@ body {
 }
 
 .tagline-wrapper {
-  width: 85%;
   text-align: left;
   margin: 0 auto;
 }
@@ -58,6 +84,116 @@ body {
   width: 100%;
   margin-right: 0;
 }
+
+.grid.grid-gif {
+  width: 90%;
+  margin-top: 10vh; 
+  margin-bottom: 10vh;
+}
+
+.col-text {
+  width: 50vw;
+  font-size: 22px;
+  font-family: 'Lato', sans-serif;
+  color: #dbd8d5;
+  text-align: left;
+  padding-left: 20px;
+}
+
+.col-gif {
+  width: 50vw;
+}
+
+.col-gif img{
+  width: 100%;
+}
+
+
+.fullWidth {
+  display: table;
+  width: 100%;
+  height: 220px;
+  background-color: #ea3363;
+  color:white;
+  font-family: 'Lato', sans-serif;
+}
+
+.fullWidth h3 {
+  font-size: 42px;
+}
+
+.fullWidth p {
+  font-size:22px;
+}
+
+.width90 {
+  vertical-align: middle;
+  display: table-cell;
+  width:90%;
+  
+}
+
+.faq-wrapper {
+  background-color: #3D434C;
+  color: white;
+  font-family: 'Lato', sans-serif;
+  text-align: left;
+} 
+
+.faq-wrapper h3 {
+  font-size: 42px;
+  margin: 10px 0;
+}
+
+.faq-wrapper h4 {
+  font-size: 28px;
+   margin: 10px 0;
+}
+
+
+.faq-wrapper span {
+  font-size: 22px;
+  padding-top: 10px;
+}
+
+
+.faq-content {
+  width: 90%;
+  padding-top: 60px;
+  margin: 0 auto;
+}
+
+.faq-question {
+  margin: 30px 0;
+}
+
+.faq-wrapper i.em {
+  width: 32px;
+  height: 32px;
+}
+
+.madeWithLove {
+  text-align: center;
+  margin-top: 100px;
+  margin-bottom: 45px;
+}
+
+.madeWithLove span {
+  font-size: 22px;
+}
+
+#crema-logo-bottom {
+  width: auto;
+  margin-top: -9px;
+  height: 70px;
+  vertical-align: middle;
+}
+
+
+
+
+
+
 
 @media screen and (max-width: 700px){
   .tagline h1{
