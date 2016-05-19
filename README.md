@@ -1,6 +1,15 @@
-# Scorebot built with Botkit
+# Mr. Scorebot built with Botkit
 
-The folks at [Botkit](https://github.com/howdyai/botkit) have done an amazing job at building a framework for (Slack) bots applications. They have included an [example](https://github.com/howdyai/botkit/blob/master/examples/slackbutton_bot.js) of creating a Slack app that can be installed with just an "Add to Slack" button, as well as an [adapter](https://github.com/howdyai/botkit-storage-mongo) allowing to use MongoDB for storage.
+This app is live on https://crema-scorebot.herokuapp.com/
+The authorization of Mr. Scorebot for the crema team can be accessed/changed via a slack admin account
+
+Testing of botkit functionality is not easily implemented at this point. https://github.com/howdyai/botkit/issues/36
+
+Storage for the heroku app is hosted on the Mlab.com free tier. The credentials to access the db are in 1password.
+
+[Botkit Documentation](https://github.com/howdyai/botkit)
+
+For questions about anything in here walter.chris@gmail.com
  
 ## Features
 
