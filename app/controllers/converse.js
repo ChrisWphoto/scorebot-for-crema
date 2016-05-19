@@ -7,7 +7,6 @@
 var Medal         = require('../models/medal');
 var Slacklete     = require('../models/slacklete');
 var RegExPatterns = require('../utils/regexPatterns');
-var SlackAPI      = require('../utils/slackAPI');
 
 
 function getReactions(msg) {
