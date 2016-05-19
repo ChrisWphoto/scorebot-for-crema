@@ -53,8 +53,8 @@ function resetScoresInDB(bot,msg){
 };
 
 //Global help text for scorebot commands 
-let scorebotCommandsText = "You can ask me things like ```@scorebot what's my score?``` ```@scorebot show me all the medals``` ```@scorebot make :smile: = 40pts``` ```@scorebot who's winning?```";
-let scorebotHelpText = "No problem! you can type: `@scorebot commands` in any channel I'm in an see all my skills";
+let scorebotCommandsText = "You can ask me things like \n*/scorebot* - Get the leaderboard without anyone else knowing \n*@scorebot my score?* - Shows you points \n*@scorebot show all medals* - Show all slack reactions with values \n*@scorebot make :smile: = 40pts* - sets value of reaction \n *@scorebot who's winning?* - Shows Leaderboard \n";
+let scorebotHelpText = "No problem! you can type: *@scorebot commands* in any channel I'm in an see all my skills";
 
 var Converse = {
   

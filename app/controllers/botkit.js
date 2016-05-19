@@ -133,15 +133,15 @@ controller.hears(['why (.*) do', 'what (.*) do', 'whay are you here', 'features'
   Converse.whatDoYouDo(bot,message);    
 });
 
-//Send scorebot help msg
+//Specifcally for Private message situation:Send help msg
 controller.hears(['help'],'direct_message',function(bot,message) {
-  console.log('Direct Mention:"commands\n', message);
+  console.log('Direct Mention:"HELP\n', message);
   Converse.commands(bot,message);
   bot.reply(message, "Note: I only listen on channels in which I am inivted. `/invite scorebot`");    
 });
 
 //Send scorebot commands
-controller.hears(['commands', 'command', 'comand',  'help', 'comands', 'orders','instructions','documentation'],'direct_message,direct_mention',function(bot,message) {
+controller.hears(['commands', 'command', 'comand',  , 'comands', 'orders','instructions','documentation'],'direct_message,direct_mention',function(bot,message) {
   console.log('Direct Mention:"commands\n', message);
   Converse.commands(bot,message);    
 });
