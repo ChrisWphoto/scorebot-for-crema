@@ -1,15 +1,17 @@
 # Mr. Scorebot built with Botkit
 
+Beta Scorebot built for http://Crema.us 
+
 This app is live on https://crema-scorebot.herokuapp.com/
 The authorization of Mr. Scorebot for the crema team can be accessed/changed via a slack admin account
 
 Testing of botkit functionality is not easily implemented at this point. https://github.com/howdyai/botkit/issues/36
 
-Storage for the heroku app is hosted on the Mlab.com free tier. The credentials to access the db are in 1password.
+
 
 [Botkit Documentation](https://github.com/howdyai/botkit)
 
-For questions about anything in here walter.chris@gmail.com
+
  
 ## Features
 
